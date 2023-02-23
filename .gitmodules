@@ -1,0 +1,3 @@
+[submodule "modules/lanedet"]
+	path = modules/lanedet
+	url = https://github.com/Turoad/lanedet
