@@ -621,3 +621,6 @@ MigrationBackup/
 
 # Ignore .env file
 .env
+
+
+data/
