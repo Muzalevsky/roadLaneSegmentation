@@ -1,3 +1,5 @@
+# noqa: flake8
+
 import os
 
 import numpy as np
@@ -5,7 +7,6 @@ import torch
 from torch.utils.data import Dataset
 
 from .utils import fs
-from .utils.torch_transform import image_2_tensor, mask_2_tensor
 
 
 class SegmentationDataset(Dataset):
@@ -29,6 +30,8 @@ class SegmentationDataset(Dataset):
     def get_sample(self, idx: int) -> tuple[np.ndarray, np.ndarray]:
         img_fpath, mask_fpath = self._fpaths[idx]
 
+        print(img_fpath)
+
         img_fpath = os.path.join(self._dpath, img_fpath)
         mask_fpath = os.path.join(self._dpath, mask_fpath)
 
@@ -44,14 +47,14 @@ class SegmentationDataset(Dataset):
             yy, xx, _zz = np.where(mask == label_color)
             one_hot_mask[yy, xx, i] = 1
 
-        return img, one_hot_mask
+        return img, mask, one_hot_mask
 
     def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
-        img, mask = self.get_sample(idx)
+        img, src_mask, masks = self.get_sample(idx)
 
-        return img, mask
+        return img, src_mask, masks
 
-        img_tensor = image_2_tensor(img)
-        mask_tensor = mask_2_tensor(mask)
+        # img_tensor = image_2_tensor(img)
+        # mask_tensor = mask_2_tensor(mask)
 
-        return img_tensor, mask_tensor
+        # return img_tensor, mask_tensor
