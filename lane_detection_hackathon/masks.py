@@ -29,13 +29,13 @@ class MaskProcessor:
         label_mask = np.zeros(mask_img.shape[:2])
         for label_name, label_id in label_map.items():
             label_color = self._map[label_name]
-            yy, xx, _zz = np.where(mask_img == label_color)
+            yy, xx = np.where(np.all(mask_img == label_color, axis=-1))
             label_mask[yy, xx] = label_id
 
         return label_mask
 
     def to_ohe_mask(self, mask_img: ImageGray, label_map: Dict):
-        one_hot_mask = np.zeros(*mask_img.shape[:2], len(label_map))
+        one_hot_mask = np.zeros((*mask_img.shape[:2], len(label_map)))
         for i, label_id in enumerate(label_map.values()):
             one_hot_mask[:, :, i][mask_img == label_id] = 1
 

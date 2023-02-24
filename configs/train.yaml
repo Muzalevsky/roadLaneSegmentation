@@ -13,11 +13,11 @@ batch_size: 1
 time_profiling: False
 
 label_map:
-  - SYD: 0
-  - BWG: 1
-  - SWD: 2
-  - SWS: 3
-  - CWYZ: 4
+  - SYD: 1
+  - BWG: 2
+  - SWD: 3
+  - SWS: 4
+  - CWYZ: 5
 
 optimizer:
   _target_: torch.optim.Adam

@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+from lane_detection_hackathon.baseparser import BaseParser
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("splitter.py")
 
@@ -21,7 +23,7 @@ def main(raw):
     raw_df = pd.read_excel(raw, index_col=0)
 
     RANDOM_SEED = 42
-    unique_folders = np.unique(raw_df["folders"])
+    unique_folders = np.unique(raw_df[BaseParser.folder_key])
 
     logger.info(f"Unique folders: {unique_folders.shape[0]}")
 
@@ -37,9 +39,9 @@ def main(raw):
     logger.info(f"\tTest: \t{test_folders}")
     logger.info(f"\tValid: \t{valid_folders}")
 
-    df_train = raw_df[raw_df["folders"].isin(train_folders)]
-    df_test = raw_df[raw_df["folders"].isin(test_folders)]
-    df_valid = raw_df[raw_df["folders"].isin(valid_folders)]
+    df_train = raw_df[raw_df[BaseParser.folder_key].isin(train_folders)]
+    df_test = raw_df[raw_df[BaseParser.folder_key].isin(test_folders)]
+    df_valid = raw_df[raw_df[BaseParser.folder_key].isin(valid_folders)]
 
     logger.info("Instances:")
     logger.info(

@@ -5,8 +5,10 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
+from .baseparser import BaseParser
 from .masks import MaskProcessor
 from .utils import fs
+from .utils.torch_transform import image_2_tensor, mask_2_tensor
 
 
 class SegmentationDataset(Dataset):
@@ -41,16 +43,15 @@ class SegmentationDataset(Dataset):
         label_mask = self._mask_processor.to_label_mask(mask, self._label_map)
         one_hot_mask = self._mask_processor.to_ohe_mask(label_mask, self._label_map)
 
-        return img, mask, one_hot_mask
+        return img, one_hot_mask
 
     def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
         row = self._df.loc[idx]
 
-        img, masks = self.get_sample(row["src"], row["tgt"])
+        img, ohe_masks = self.get_sample(row[BaseParser.src_key], row[BaseParser.target_key])
 
-        return img, masks
+        img_tensor = image_2_tensor(img)
+        # TODO: check for multiple masks
+        mask_tensor = mask_2_tensor(ohe_masks)
 
-        # img_tensor = image_2_tensor(img)
-        # mask_tensor = mask_2_tensor(mask)
-
-        # return img_tensor, mask_tensor
+        return img_tensor, mask_tensor
