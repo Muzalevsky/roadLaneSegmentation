@@ -13,3 +13,6 @@ https://xingangpan.github.io/projects/CULane.html
 
 # ~~Cityscapes~~ <-- Нет разметки
 https://www.cityscapes-dataset.com/
+
+# ~~KITTI~~ <-- Нет разметки
+https://www.cvlibs.net/datasets/kitti/eval_road.php
