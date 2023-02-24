@@ -4,8 +4,10 @@ import os.path as osp
 
 import pandas as pd
 
+from .baseparser import BaseParser
 
-class ApolloScape:
+
+class ApolloScape(BaseParser):
     def parse(self, dataset_path: str):
         root = dataset_path
         ds_name = os.path.basename(root)
@@ -27,11 +29,12 @@ class ApolloScape:
 
             if label_folderpath not in unique_folders:
                 unique_folders.append(label_folderpath)
-                print(label_folderpath)
 
             if osp.exists(os.path.join(ds_root, label_candidate)):
                 src_files.append(color_image_rel_path)
                 tgt_files.append(label_candidate)
                 folder_indices.append(unique_folders.index(label_folderpath))
 
-        return pd.DataFrame({"src": src_files, "tgt": tgt_files, "folders": folder_indices})
+        return pd.DataFrame(
+            {self.src_key: src_files, self.target_key: tgt_files, self.folder_key: folder_indices}
+        )
