@@ -12,6 +12,9 @@ class ApolloScape:
         ds_root = os.path.dirname(root)
         src_files = []
         tgt_files = []
+        folder_indices = []
+
+        unique_folders = []
 
         for filename in glob.iglob(root + os.sep + "**/*.jpg", recursive=True):
             color_image_rel_path = filename.replace(root, ds_name)
@@ -22,8 +25,13 @@ class ApolloScape:
             label_folderpath = color_image_folderpath.replace("ColorImage", "Label")
             label_candidate = os.path.join(label_folderpath, color_image_basename + "_bin.png")
 
+            if label_folderpath not in unique_folders:
+                unique_folders.append(label_folderpath)
+                print(label_folderpath)
+
             if osp.exists(os.path.join(ds_root, label_candidate)):
                 src_files.append(color_image_rel_path)
                 tgt_files.append(label_candidate)
+                folder_indices.append(unique_folders.index(label_folderpath))
 
-        return pd.DataFrame({"src": src_files, "tgt": tgt_files})
+        return pd.DataFrame({"src": src_files, "tgt": tgt_files, "folders": folder_indices})
