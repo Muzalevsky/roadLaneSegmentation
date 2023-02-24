@@ -1,0 +1,41 @@
+project_name: Lane Markings Segmentation
+
+enable_clearml: False
+
+num_epochs: 100
+seed: 42
+lr: 1.0e-4
+
+# All cores
+num_workers: -1
+batch_size: 1
+
+time_profiling: False
+
+label_map:
+  - SYD: 0
+  - BWG: 1
+  - SWD: 2
+  - SWS: 3
+  - CWYZ: 4
+
+optimizer:
+  _target_: torch.optim.Adam
+  lr: ${lr}
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
+  # Must be tuned based on samples count
+  patience: 10
+  # cooldown: 5
+  factor: 0.5
+  min_lr: 1.0e-7
+  verbose: True
+
+criterion:
+  _target_: torch.nn.CrossEntropyLoss
+
+model:
+  _target_: segmentation_models_pytorch.Unet
+  encoder_name: resnet34
+  classes: 3
