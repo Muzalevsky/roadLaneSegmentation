@@ -15,6 +15,8 @@ class ApolloScape:
         src_files = []
         tgt_files = []
 
+        print(root, ds_name, ds_root)
+
         for filename in glob.iglob(root + os.sep + "**/*.jpg", recursive=True):
             color_image_rel_path = filename.replace(root, ds_name + osp.sep)
             clear_fname = os.path.basename(color_image_rel_path)
