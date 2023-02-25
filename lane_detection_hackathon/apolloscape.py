@@ -3,6 +3,7 @@ import os
 import os.path as osp
 
 import pandas as pd
+from tqdm import tqdm
 
 from .baseparser import BaseParser
 
@@ -18,7 +19,7 @@ class ApolloScape(BaseParser):
 
         unique_folders = []
 
-        for filename in glob.iglob(root + os.sep + "**/*.jpg", recursive=True):
+        for filename in tqdm(glob.iglob(root + os.sep + "**/*.jpg", recursive=True)):
             color_image_rel_path = filename.replace(root, ds_name)
             clear_fname = os.path.basename(color_image_rel_path)
             color_image_basename = os.path.splitext(clear_fname)[0]
