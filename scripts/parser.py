@@ -33,7 +33,6 @@ def main(input, output, cell_size):
     logger.info(f"RAW_DATASET_DIR={input}")
     logger.info(f"OUTPUT_DIR={output}")
 
-    # if apolloscape.ApolloScape.is_in(input):
     ds_parser = parser(input, output, images_dirname, masks_dirname, excel_dirname)
     ds_parser.parse(cell_size)
     logger.info(f"Parsed dataset <{input}>.")

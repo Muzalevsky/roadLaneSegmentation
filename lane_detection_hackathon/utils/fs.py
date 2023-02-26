@@ -5,6 +5,8 @@ import cv2
 import numpy as np
 import yaml
 
+from .image import is_gray
+
 
 @lru_cache(maxsize=128)
 def read_image(fpath: str, gray_scale: bool = False) -> np.ndarray:
@@ -16,6 +18,13 @@ def read_image(fpath: str, gray_scale: bool = False) -> np.ndarray:
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     return img
+
+
+def write_image(fpath: str, img: np.array):
+    if not is_gray(img):
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+    cv2.imwrite(fpath, img)
 
 
 def read_yaml(fpath: str) -> dict:
