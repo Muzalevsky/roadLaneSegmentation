@@ -12,27 +12,31 @@ logger = logging.getLogger(__file__)
 
 
 @click.command()
-@click.option("--dataset", "-d", help="name of the dataset root folder", type=str, required=True)
-def main(dataset):
-    PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-    DATA_DIR = os.path.join(PROJECT_ROOT, "data")
-    RAW_DATASET_DIR = os.path.join(DATA_DIR, dataset)
+@click.option("--input", "-i", help="dataset root folder path", type=str, required=True)
+@click.option("--output", "-o", help="output folder path", type=str, required=True)
+@click.option("--cell_size", "-c", help="cell size of the image in [px]", type=int, required=True)
+def main(input, output, cell_size):
+    if apolloscape.ApolloScape.is_in(input):
+        parser = apolloscape.ApolloScape
+    else:
+        raise ValueError(f"Unsupported dataset <{input}>.")
 
-    logger.info(f"PROJECT_ROOT={PROJECT_ROOT}")
-    logger.info(f"RAW_DATASET_DIR={RAW_DATASET_DIR}")
+    images_dirname = os.path.join(output, "images")
+    os.makedirs(images_dirname, exist_ok=True)
 
-    if dataset == "apolloscape":
-        ds_parser = apolloscape.ApolloScape()
-        df = ds_parser.parse(RAW_DATASET_DIR)
-        table_dir = os.path.join(
-            DATA_DIR, "datasets", dataset, datetime.today().strftime("%Y_%m_%d")
-        )
-        if not os.path.exists(table_dir):
-            os.makedirs(table_dir)
+    masks_dirname = os.path.join(output, "masks")
+    os.makedirs(masks_dirname, exist_ok=True)
 
-        excel_path = os.path.join(table_dir, "raw_data.xlsx")
-        df.to_excel(excel_path)
-        logger.info(f"Parsed dataset <{dataset}>. Resulting file: {excel_path}")
+    excel_dirname = os.path.join(output, datetime.today().strftime("%Y_%m_%d"))
+    os.makedirs(excel_dirname, exist_ok=True)
+
+    logger.info(f"RAW_DATASET_DIR={input}")
+    logger.info(f"OUTPUT_DIR={output}")
+
+    # if apolloscape.ApolloScape.is_in(input):
+    ds_parser = parser(input, output, images_dirname, masks_dirname, excel_dirname)
+    ds_parser.parse(cell_size)
+    logger.info(f"Parsed dataset <{input}>.")
 
 
 if __name__ == "__main__":
