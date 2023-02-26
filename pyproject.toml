@@ -43,6 +43,7 @@ checksumdir = "^1.2.0"
 catalyst = "^22.4"
 torchvision = "^0.14.1"
 segmentation-models-pytorch = "^0.3.2"
+pyyaml = "^6.0"
 
 [tool.poetry.group.dev.dependencies]
 black = {version = "^21.7", allow-prereleases = true}
