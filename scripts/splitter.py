@@ -10,7 +10,7 @@ from sklearn.model_selection import train_test_split
 from lane_detection_hackathon.baseparser import BaseParser
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("splitter.py")
+logger = logging.getLogger(__file__)
 
 
 @click.command()
