@@ -13,12 +13,16 @@ lr: 1.0e-4
 num_workers: -1
 batch_size: 1
 
+dataset_name: apolloscape
+dataset_version: "2023_02_24"
+
 label_map:
-  - SYD: 1
-  - BWG: 2
-  - SWD: 3
-  - SWS: 4
-  - CWYZ: 5
+  SYD: 1
+  BWG: 2
+  SWD: 3
+  SWS: 4
+  CWYZ: 5
+
 
 transformer:
   _target_: lane_detection_hackathon.transforms.LaneMarkingAlbuAugmentation

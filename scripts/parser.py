@@ -8,7 +8,7 @@ import click
 from lane_detection_hackathon import apolloscape
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("parser.py")
+logger = logging.getLogger(__file__)
 
 
 @click.command()
