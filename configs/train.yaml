@@ -2,6 +2,9 @@ project_name: Lane Markings Segmentation
 
 enable_clearml: False
 
+verbose: True
+time_profiling: True
+
 num_epochs: 100
 seed: 42
 lr: 1.0e-4
@@ -10,14 +13,15 @@ lr: 1.0e-4
 num_workers: -1
 batch_size: 1
 
-time_profiling: False
-
 label_map:
   - SYD: 1
   - BWG: 2
   - SWD: 3
   - SWS: 4
   - CWYZ: 5
+
+transformer:
+  _target_: lane_detection_hackathon.transforms.LaneMarkingAlbuAugmentation
 
 optimizer:
   _target_: torch.optim.Adam

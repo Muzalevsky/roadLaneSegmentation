@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 
-class SimpleAlbuAugmentation:
+class LaneMarkingAlbuAugmentation:
     def __init__(self):
         ssr_params = dict(
             shift_limit=0.1,

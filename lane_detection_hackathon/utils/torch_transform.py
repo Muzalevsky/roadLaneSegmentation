@@ -13,5 +13,5 @@ def image_2_tensor(image: np.ndarray) -> torch.Tensor:
 def mask_2_tensor(mask: np.ndarray) -> torch.Tensor:
     tensor = torch.from_numpy(mask)
     tensor = tensor.long()
-    # tensor = tensor.permute(2, 0, 1)
+    tensor = tensor.permute(2, 0, 1)
     return tensor
