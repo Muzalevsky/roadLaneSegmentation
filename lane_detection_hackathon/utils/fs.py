@@ -1,5 +1,4 @@
 import json
-from functools import lru_cache
 
 import cv2
 import numpy as np
@@ -8,7 +7,6 @@ import yaml
 from .image import is_gray
 
 
-@lru_cache(maxsize=128)
 def read_image(fpath: str, gray_scale: bool = False) -> np.ndarray:
     flag = None
     if gray_scale:

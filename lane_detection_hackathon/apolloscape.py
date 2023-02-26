@@ -41,7 +41,7 @@ class ApolloScape(BaseParser):
 
         self._n_jobs = n_jobs
         if self._n_jobs < 0:
-            self._n_jobs = mpr.cpu_count()
+            self._n_jobs = mpr.cpu_count() - 1
         self._logger.info(f"{self._n_jobs} jobs are configured.")
 
     @staticmethod
