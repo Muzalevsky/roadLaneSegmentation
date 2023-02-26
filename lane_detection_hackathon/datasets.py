@@ -40,7 +40,7 @@ class FileDataset:
         self._train_fpath = os.path.join(self._dpath, f"train.{self.default_extension}")
         self._logger.info(f"Train data path: {self._train_fpath}")
 
-        self._valid_fpath = os.path.join(self._dpath, f"val.{self.default_extension}")
+        self._valid_fpath = os.path.join(self._dpath, f"valid.{self.default_extension}")
         self._logger.info(f"Val data path: {self._valid_fpath}")
 
         self._test_fpath = os.path.join(self._dpath, f"test.{self.default_extension}")
@@ -107,9 +107,11 @@ class SegmentationDataset(Dataset):
         return img, one_hot_mask
 
     def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
-        row = self._df.loc[idx]
+        row = self._df.iloc[idx]
 
         img, ohe_masks = self.get_sample(row[BaseParser.src_key], row[BaseParser.target_key])
+
+        # TODO: normalize img, values: [0, 1]
 
         img_tensor = image_2_tensor(img)
         # TODO: check for multiple masks
