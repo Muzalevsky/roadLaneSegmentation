@@ -23,6 +23,7 @@ label_map:
   SWS: 4
   CWYZ: 5
 
+cell_size: 512
 
 transformer:
   _target_: lane_detection_hackathon.transforms.LaneMarkingAlbuAugmentation
