@@ -16,10 +16,7 @@ logger = logging.getLogger(__file__)
 @click.command()
 @click.option("--raw", help="path to the raw dataset description table", type=str, required=True)
 def main(raw):
-
     raw_dir = os.path.abspath(os.path.dirname(raw))
-    print(raw_dir)
-
     raw_df = pd.read_excel(raw, index_col=0)
 
     RANDOM_SEED = 42
