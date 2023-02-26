@@ -8,7 +8,6 @@ import os
 from collections import namedtuple
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-import cv2
 import pandas as pd
 from tqdm import tqdm
 
@@ -92,8 +91,8 @@ class ApolloScape(BaseParser):
                 img_cell_fpath = os.path.join(cell_images_dir, img_cell_fname)
                 mask_cell_fpath = os.path.join(cell_mask_dir, mask_cell_fname)
 
-                cv2.imwrite(img_cell_fpath, img_cell)
-                cv2.imwrite(mask_cell_fpath, mask_cell)
+                fs.write_image(img_cell_fpath, img_cell)
+                fs.write_image(mask_cell_fpath, mask_cell)
 
                 img_cell_rel_path = img_cell_fpath.replace(res_dir, "").lstrip(os.sep)
                 mask_cell_rel_path = mask_cell_fpath.replace(res_dir, "").lstrip(os.sep)
