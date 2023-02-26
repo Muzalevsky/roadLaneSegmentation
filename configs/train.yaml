@@ -10,11 +10,11 @@ seed: 42
 lr: 1.0e-4
 
 # All cores
-num_workers: -1
+num_workers: 2
 batch_size: 1
 
-dataset_name: apolloscape
-dataset_version: "2023_02_24"
+dataset_name: apolloscapes_preprocessed
+dataset_version: "2023_02_26"
 
 label_map:
   SYD: 1
@@ -46,4 +46,4 @@ criterion:
 model:
   _target_: segmentation_models_pytorch.Unet
   encoder_name: resnet34
-  classes: 3
+  classes: ${len:${label_map}}

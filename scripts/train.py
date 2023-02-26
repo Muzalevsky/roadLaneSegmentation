@@ -11,7 +11,6 @@ from torch.utils.data import DataLoader
 from lane_detection_hackathon import callbacks as cb
 from lane_detection_hackathon.datasets import DatasetMode, FileDataset, SegmentationDataset
 from lane_detection_hackathon.utils import misc, project
-from lane_detection_hackathon.utils.torch_transform import mask_batch_idx_2_ohe_encode
 
 CURRENT_DPATH = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DPATH, os.pardir))
@@ -42,14 +41,16 @@ def get_loaders(cfg: DictConfig, file_dataset: FileDataset):
     logger.info(f"Train data shape: {train_df.shape}")
     logger.info(f"Valid data shape: {valid_df.shape}")
 
+    files_dpath = os.path.join(DATA_DPATH, cfg.dataset_name)
+
     train_dataset = SegmentationDataset(
-        dpath=DATA_DPATH,
+        dpath=files_dpath,
         df=train_df,
         label_map=cfg.label_map,
         transforms=transformer,
     )
     valid_dataset = SegmentationDataset(
-        dpath=DATA_DPATH,
+        dpath=files_dpath,
         df=valid_df,
         label_map=cfg.label_map,
         transforms=None,
@@ -78,7 +79,9 @@ def get_loaders(cfg: DictConfig, file_dataset: FileDataset):
 
 @hydra.main(config_path=CONFIG_DPATH, config_name="train")
 def main(cfg: DictConfig):
-    dataset_dpath = os.path.join(DATASET_DPATH, cfg.dataset_name, cfg.dataset_version)
+    OmegaConf.register_new_resolver("len", lambda data: len(data))
+
+    dataset_dpath = os.path.join(DATA_DPATH, cfg.dataset_name, cfg.dataset_version)
     file_dataset = FileDataset(dataset_dpath)
 
     clearml_task = misc.init_clearml(cfg, file_dataset.hash)
@@ -112,26 +115,24 @@ def main(cfg: DictConfig):
     )
 
     additional_callbacks = [
-        [
-            cb.LogBestCheckpoint2ClearMLCallback(
-                logdir=checkpoint_dpath,
-                loader_key="valid",
-                metric_key="dice",
-                minimize=False,
-                save_kwargs=checkpoint_save_dict,
-                clearml_task=clearml_task,
-                suffix=checkpoints_suffix,
-            ),
-            cb.LogBestCheckpoint2ClearMLCallback(
-                logdir=checkpoint_dpath,
-                loader_key="valid",
-                metric_key="iou",
-                minimize=False,
-                save_kwargs=checkpoint_save_dict,
-                clearml_task=clearml_task,
-                suffix=checkpoints_suffix,
-            ),
-        ]
+        cb.LogBestCheckpoint2ClearMLCallback(
+            logdir=checkpoint_dpath,
+            loader_key="valid",
+            metric_key="dice",
+            minimize=False,
+            save_kwargs=checkpoint_save_dict,
+            clearml_task=clearml_task,
+            suffix=checkpoints_suffix,
+        ),
+        cb.LogBestCheckpoint2ClearMLCallback(
+            logdir=checkpoint_dpath,
+            loader_key="valid",
+            metric_key="iou",
+            minimize=False,
+            save_kwargs=checkpoint_save_dict,
+            clearml_task=clearml_task,
+            suffix=checkpoints_suffix,
+        ),
     ]
 
     runner.train(
@@ -143,12 +144,12 @@ def main(cfg: DictConfig):
         num_epochs=cfg.num_epochs,
         callbacks=[
             # Required for metrics data transform
-            dl.BatchTransformCallback(
-                input_key="targets",
-                output_key="targets_ohe",
-                scope="on_batch_end",
-                transform=partial(mask_batch_idx_2_ohe_encode, n_classes=num_classes),
-            ),
+            # dl.BatchTransformCallback(
+            #     input_key="targets",
+            #     output_key="targets_ohe",
+            #     scope="on_batch_end",
+            #     transform=partial(mask_batch_idx_2_ohe_encode, n_classes=num_classes),
+            # ),
             dl.BatchTransformCallback(
                 input_key="logits",
                 output_key="scores",
@@ -158,21 +159,21 @@ def main(cfg: DictConfig):
             # This one requires output in format [0; 1]
             dl.IOUCallback(
                 input_key="scores",
-                target_key="targets_ohe",
+                target_key="targets",
                 class_names=label_names,
                 log_on_batch=LOG_ON_BATCH,
             ),
             # This one requires output in format [0; 1]
             dl.DiceCallback(
                 input_key="scores",
-                target_key="targets_ohe",
+                target_key="targets",
                 class_names=label_names,
                 log_on_batch=LOG_ON_BATCH,
             ),
             # This one requires output in format [0; 1]
             dl.TrevskyCallback(
                 input_key="scores",
-                target_key="targets_ohe",
+                target_key="targets",
                 class_names=label_names,
                 alpha=0.2,
                 log_on_batch=LOG_ON_BATCH,

@@ -8,6 +8,8 @@ from clearml import Task
 
 
 class LogBestCheckpoint2ClearMLCallback(ICheckpointCallback):
+    """Class for logging into ClearML."""
+
     def __init__(
         self,
         logdir: str,
@@ -67,9 +69,7 @@ class LogBestCheckpoint2ClearMLCallback(ICheckpointCallback):
         return checkpoint_path
 
     def on_epoch_end(self, runner: "IRunner") -> None:
-        """
-        Collects and saves checkpoint after epoch.
-
+        """Collect and save checkpoint after epoch.
         Args:
             runner: current runner
         """
