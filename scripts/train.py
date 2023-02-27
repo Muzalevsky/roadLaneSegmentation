@@ -15,8 +15,8 @@ from lane_detection_hackathon.utils import misc, project
 CURRENT_DPATH = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DPATH, os.pardir))
 CONFIG_DPATH = os.path.join(PROJECT_ROOT, "configs")
-DATA_DPATH = os.path.join(PROJECT_ROOT, "data")
-DATASET_DPATH = os.path.join(PROJECT_ROOT, "data", "datasets")
+# TODO: fix hardcode
+DATA_DPATH = os.path.join(PROJECT_ROOT, "external_data", "apolloscape")
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"

@@ -622,8 +622,9 @@ MigrationBackup/
 # Ignore .env file
 .env
 
-# Data folder
+# Large Data folder
 data/
+external_data/
 
 # git artifacts
 *.orig
@@ -633,3 +634,6 @@ train_checkpoints/
 
 # hydra outputs
 outputs/
+
+
+*.ipynb_checkpoints/
