@@ -6,44 +6,44 @@ import numpy as np
 class LaneMarkingAlbuAugmentation:
     def __init__(self):
         ssr_params = dict(
-            shift_limit=0.1,
-            scale_limit=0.1,
-            rotate_limit=45,
+            shift_limit=0.2,
+            scale_limit=0.2,
+            rotate_limit=15,
             interpolation=3,
             border_mode=cv2.BORDER_CONSTANT,
             p=0.5,
         )
 
         cd_params = dict(
-            min_holes=1,
-            max_holes=8,
-            min_height=20,
-            max_height=100,
-            min_width=20,
-            max_width=100,
+            min_holes=100,
+            max_holes=150,
+            min_height=10,
+            max_height=50,
+            min_width=10,
+            max_width=50,
             p=0.5,
             mask_fill_value=0,
         )
 
         self.description = [
             albu.ToGray(p=0.3),
-            albu.VerticalFlip(p=0.5),
             albu.HorizontalFlip(p=0.5),
-            albu.RandomRotate90(p=0.5),
             albu.OneOf(
                 [
-                    albu.GaussNoise(p=0.5),
-                    albu.MultiplicativeNoise(per_channel=True, p=0.3),
+                    albu.GaussNoise(p=0.5),  # no effect
+                    albu.MultiplicativeNoise(per_channel=True, p=0.3),  # no effect
                 ],
                 p=0.4,
             ),
-            albu.ImageCompression(quality_lower=90, quality_upper=100, p=0.5),
+            albu.ImageCompression(
+                quality_lower=10, quality_upper=20, p=0.5
+            ),  # jpg? almost no effect
             albu.OneOf(
                 [
-                    albu.MotionBlur(blur_limit=3, p=0.2),
-                    albu.MedianBlur(blur_limit=3, p=0.2),
-                    albu.GaussianBlur(blur_limit=3, p=0.2),
-                    albu.Blur(blur_limit=3, p=0.2),
+                    albu.MotionBlur(blur_limit=33, p=0.2),
+                    albu.MedianBlur(blur_limit=23, p=0.2),
+                    albu.GaussianBlur(blur_limit=27, p=0.2),
+                    albu.Blur(blur_limit=13, p=0.2),
                 ],
                 p=0.2,
             ),
