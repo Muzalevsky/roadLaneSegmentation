@@ -7,7 +7,7 @@ from segmentation_models_pytorch import Unet
 from tqdm import tqdm
 
 from .utils.torch_transform import image_2_tensor
-from .utils.types import ImageMask, ImageRGB
+from .utils.types import Dict, ImageMask, ImageRGB
 
 
 class BaseInference:
@@ -42,6 +42,8 @@ class BaseInference:
 
 
 class SegmentationInference(BaseInference):
+    """Segmentation Inference class implementation."""
+
     def __init__(
         self,
         model,
@@ -59,6 +61,10 @@ class SegmentationInference(BaseInference):
     @property
     def cell_size(self):
         return self._config.get("cell_size")
+
+    @property
+    def label_map(self):
+        return Dict(self._config.get("label_map"))
 
     @classmethod
     def from_checkpoint(cls, checkpoint_state: dict, **kwargs):
@@ -115,5 +121,6 @@ class SegmentationInference(BaseInference):
                 pred_masks.append(scores_pred_t)
 
         # TODO: merge patches into full image
-        pred_full_mask = None
-        return pred_full_mask
+        full_pred_masks = None
+
+        return full_pred_masks
