@@ -2,7 +2,6 @@ from typing import Optional
 
 import glob
 import logging
-import math
 import multiprocessing as mpr
 import os
 from collections import namedtuple
@@ -55,6 +54,7 @@ class ApolloScape(BaseParser):
         cell_mask_dir: str,
         cell_size_px: int,
         imageinfo: SampleInfo,
+        logger: logging.Logger,
     ):
 
         imagepath = imageinfo.img_fpath
@@ -66,38 +66,30 @@ class ApolloScape(BaseParser):
 
         img = fs.read_image(imagepath)
         mask = fs.read_image(maskpath)
-        img_reader = ImageBlockReader(img, [0, 0, 0])
-        mask_reader = ImageBlockReader(mask, [0, 0, 0])
+
+        if img.shape[:2] != mask.shape[:2]:
+            logger.warning(f"Different image sizes <{img.shape[:2]} != {mask.shape[:2]}>.")
+            return
+
+        block_reader = ImageBlockReader([0, 0, 0])
+        img_tiles = block_reader.read_blocks(img, cell_size_px)
+        mask_tiles = block_reader.read_blocks(mask, cell_size_px)
 
         cells = []
+        for index, (img_tile, mask_tile) in enumerate(zip(img_tiles, mask_tiles)):
+            img_cell_fname = img_name + f"_{index}" + img_extension
+            mask_cell_fname = mask_name + f"_{index}" + mask_extension
 
-        # Attention: requires same size of image and mask
-        w = math.ceil(img.shape[1] / cell_size_px)
-        h = math.ceil(img.shape[0] / cell_size_px)
+            img_cell_fpath = os.path.join(cell_images_dir, img_cell_fname)
+            mask_cell_fpath = os.path.join(cell_mask_dir, mask_cell_fname)
 
-        for str in range(h):
-            for col in range(w):
-                img_cell = img_reader.read_block(
-                    (col * cell_size_px, str * cell_size_px, cell_size_px, cell_size_px)
-                )
-                mask_cell = mask_reader.read_block(
-                    (col * cell_size_px, str * cell_size_px, cell_size_px, cell_size_px)
-                )
+            fs.write_image(img_cell_fpath, img_tile)
+            fs.write_image(mask_cell_fpath, mask_tile)
 
-                index = str * w + col
-                img_cell_fname = img_name + f"_{index}" + img_extension
-                mask_cell_fname = mask_name + f"_{index}" + mask_extension
+            img_cell_rel_path = img_cell_fpath.replace(res_dir, "").lstrip(os.sep)
+            mask_cell_rel_path = mask_cell_fpath.replace(res_dir, "").lstrip(os.sep)
 
-                img_cell_fpath = os.path.join(cell_images_dir, img_cell_fname)
-                mask_cell_fpath = os.path.join(cell_mask_dir, mask_cell_fname)
-
-                fs.write_image(img_cell_fpath, img_cell)
-                fs.write_image(mask_cell_fpath, mask_cell)
-
-                img_cell_rel_path = img_cell_fpath.replace(res_dir, "").lstrip(os.sep)
-                mask_cell_rel_path = mask_cell_fpath.replace(res_dir, "").lstrip(os.sep)
-
-                cells.append([img_cell_rel_path, mask_cell_rel_path, folder])
+            cells.append([img_cell_rel_path, mask_cell_rel_path, folder])
 
         return cells
 
@@ -135,6 +127,7 @@ class ApolloScape(BaseParser):
                     cell_mask_dir=self._mask_dir,
                     cell_size_px=cell_size_px,
                     imageinfo=img_info,
+                    logger=self._logger,
                 )
                 fut_results.append(fut_result)
 
