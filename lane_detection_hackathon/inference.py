@@ -1,6 +1,13 @@
+from typing import Optional
+
 import logging
 
 import torch
+from segmentation_models_pytorch import Unet
+from tqdm import tqdm
+
+from .utils.torch_transform import image_2_tensor
+from .utils.types import ImageMask, ImageRGB
 
 
 class BaseInference:
@@ -35,5 +42,78 @@ class BaseInference:
 
 
 class SegmentationInference(BaseInference):
-    # TODO: inference implementation with batch-generation
-    pass
+    def __init__(
+        self,
+        model,
+        cfg: dict,
+        batch_size: Optional[int] = 4,
+        verbose: Optional[bool] = False,
+        device: Optional[str] = "cpu",
+    ):
+        super().__init__(model, batch_size, device)
+
+        self._config = cfg
+        self._verbose = verbose
+        self._prepare_model()
+
+    @property
+    def cell_size(self):
+        return self._config.get("cell_size")
+
+    @classmethod
+    def from_checkpoint(cls, checkpoint_state: dict, **kwargs):
+        model_state = checkpoint_state["model_state_dict"]
+        model_cfg = checkpoint_state.get("config")
+
+        n_classes = len(model_cfg["label_map"])
+        model = Unet(encoder_name="resnet34", classes=n_classes)
+
+        model.load_state_dict(model_state)
+
+        obj_ = cls(model=model, cfg=model_cfg, **kwargs)
+        return obj_
+
+    def batch_generator(self, img_patches: list[ImageRGB]):
+        tensors_batch = []
+
+        stream = img_patches
+        if self._verbose:
+            stream = tqdm(img_patches, desc="Batch Processing")
+
+        for img in stream:
+            img_t = image_2_tensor(img)
+            tensors_batch.append(img_t)
+
+            if len(tensors_batch) >= self._batch_size:
+                batch_t = torch.stack(tensors_batch, axis=0)
+                yield batch_t
+                tensors_batch.clear()
+
+        if len(tensors_batch):
+            batch_t = torch.stack(tensors_batch, axis=0)
+            yield batch_t
+            tensors_batch.clear()
+
+    def predict(self, full_img: ImageRGB) -> ImageMask:
+        # TODO: split full_img into patches
+        img_patches = None
+
+        pred_masks = []
+
+        stream = self.batch_generator(img_patches)
+        for img_batch_t in stream:
+            with torch.no_grad():
+                img_batch_t = img_batch_t.to(self._device)
+
+                logits_pred_t = self._model(img_batch_t)
+                scores_pred_t = torch.softmax(logits_pred_t, dim=1)
+
+                # Convert BCHW to BHWC
+                scores_pred_t = scores_pred_t.permute(0, 2, 3, 1)
+                # TODO: check, add numpy()
+                scores_pred_t = scores_pred_t.cpu()
+                pred_masks.append(scores_pred_t)
+
+        # TODO: merge patches into full image
+        pred_full_mask = None
+        return pred_full_mask
