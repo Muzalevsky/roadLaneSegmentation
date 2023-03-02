@@ -72,6 +72,7 @@ class SegmentationInference(BaseInference):
         model_cfg = checkpoint_state.get("config")
 
         n_classes = len(model_cfg["label_map"])
+        # TODO: fix for another model, make more universal
         model = Unet(encoder_name="resnet34", classes=n_classes)
 
         model.load_state_dict(model_state)
