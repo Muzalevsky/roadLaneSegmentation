@@ -39,11 +39,11 @@ class ImageBlockReader:
         h = math.ceil(image.shape[0] / cell_size_px)
 
         blocks = []
-        for str in range(h):
+        for row in range(h):
             for col in range(w):
                 blocks.append(
                     self.read_block(
-                        image, (col * cell_size_px, str * cell_size_px, cell_size_px, cell_size_px)
+                        image, (col * cell_size_px, row * cell_size_px, cell_size_px, cell_size_px)
                     )
                 )
 

@@ -17,6 +17,7 @@ dataset_name: examples_preprocessed
 dataset_version: "2023_02_27"
 
 label_map:
+  background: 0
   SYD: 1
   BWG: 2
   SWD: 3
