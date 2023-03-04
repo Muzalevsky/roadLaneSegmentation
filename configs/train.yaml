@@ -10,14 +10,14 @@ seed: 42
 lr: 1.0e-4
 
 # All cores
-num_workers: 2
-batch_size: 1
+num_workers: -1
+batch_size: 4
 
-# dataset_name: examples_preprocessed
-# dataset_version: "2023_02_27"
+dataset_name: examples_preprocessed
+dataset_version: "2023_02_27"
 
-dataset_name: apolloscapes_preprocessed
-dataset_version: "2023_02_26"
+# dataset_name: apolloscapes_preprocessed
+# dataset_version: "2023_02_26"
 
 label_map:
   background: 0
@@ -26,6 +26,14 @@ label_map:
   SWD: 3
   SWS: 4
   CWYZ: 5
+
+class_weights:
+  background: 0.05
+  SYD: 0.19
+  BWG: 0.19
+  SWD: 0.19
+  SWS: 0.19
+  CWYZ: 0.19
 
 cell_size: 512
 

@@ -3,7 +3,8 @@ import os
 from functools import partial
 
 import hydra
-from catalyst import dl, metrics
+import torch
+from catalyst import dl
 from omegaconf import DictConfig, OmegaConf
 from torch import nn
 from torch.utils.data import DataLoader
@@ -110,37 +111,12 @@ def main(cfg: DictConfig):
     model = hydra.utils.instantiate(cfg.model)
     optimizer = hydra.utils.instantiate(cfg.optimizer, params=model.parameters())
     scheduler = hydra.utils.instantiate(cfg.scheduler, optimizer=optimizer)
-    criterion = hydra.utils.instantiate(cfg.criterion)
 
-    class CustomRunner(dl.SupervisedRunner):
-        def on_loader_start(self, runner: dl.IRunner):
-            super().on_loader_start(runner)
-            self.meters = {key: metrics.AdditiveMetric(compute_on_call=False) for key in ["loss"]}
+    weights = list(cfg.class_weights.values())
+    weights = torch.tensor(weights)
+    criterion = hydra.utils.instantiate(cfg.criterion, weight=weights)
 
-        def handle_batch(self, batch):
-            images, targets, weights = batch["features"], batch["targets"], batch["weights"]
-
-            logits = self._model(images)
-            batch_size = targets.size(0)
-
-            loss = criterion(logits, targets)
-            loss = loss * weights
-            loss_mean = loss.mean()
-
-            self.batch = {"logits": logits, "targets": targets, "loss": loss_mean}
-            self.batch_metrics.update({"loss": loss_mean})
-            for key in ["loss"]:
-                self.meters[key].update(self.batch_metrics[key].item(), batch_size)
-
-        def on_loader_end(self, runner: dl.IRunner):
-            for key in ["loss"]:
-                self.loader_metrics[key] = self.meters[key].compute()[0]
-            super().on_loader_end(runner)
-
-        def on_epoch_end(self, runner):
-            super().on_epoch_end(runner)
-
-    runner = CustomRunner(
+    runner = dl.SupervisedRunner(
         input_key="features", output_key="logits", target_key="targets", loss_key="loss"
     )
 

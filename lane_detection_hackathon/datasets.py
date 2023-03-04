@@ -115,6 +115,5 @@ class SegmentationDataset(Dataset):
 
         img_tensor = image_2_tensor(img)
         mask_tensor = mask_2_tensor(ohe_masks)
-        weights = np.array([0.05, 0.19, 0.19, 0.19, 0.19, 0.19])
 
-        return {"features": img_tensor, "targets": mask_tensor, "weights": weights}
+        return {"features": img_tensor, "targets": mask_tensor}
