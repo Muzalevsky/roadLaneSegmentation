@@ -3,7 +3,7 @@ import os
 from functools import partial
 
 import hydra
-from catalyst import dl
+from catalyst import dl, metrics
 from omegaconf import DictConfig, OmegaConf
 from torch import nn
 from torch.utils.data import DataLoader
@@ -16,7 +16,8 @@ CURRENT_DPATH = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DPATH, os.pardir))
 CONFIG_DPATH = os.path.join(PROJECT_ROOT, "configs")
 # TODO: fix hardcode
-DATA_DPATH = os.path.join(PROJECT_ROOT, "external_data", "apolloscape")
+# DATA_DPATH = os.path.join(PROJECT_ROOT, "external_data", "apolloscape")
+DATA_DPATH = os.path.join(PROJECT_ROOT, "data")
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -82,6 +83,7 @@ def main(cfg: DictConfig):
     OmegaConf.register_new_resolver("len", lambda data: len(data))
 
     dataset_dpath = os.path.join(DATA_DPATH, cfg.dataset_name, cfg.dataset_version)
+    logger.info(f"Dataset dpath: {dataset_dpath}")
     file_dataset = FileDataset(dataset_dpath)
 
     clearml_task = misc.init_clearml(cfg, file_dataset.hash)
@@ -110,7 +112,35 @@ def main(cfg: DictConfig):
     scheduler = hydra.utils.instantiate(cfg.scheduler, optimizer=optimizer)
     criterion = hydra.utils.instantiate(cfg.criterion)
 
-    runner = dl.SupervisedRunner(
+    class CustomRunner(dl.SupervisedRunner):
+        def on_loader_start(self, runner: dl.IRunner):
+            super().on_loader_start(runner)
+            self.meters = {key: metrics.AdditiveMetric(compute_on_call=False) for key in ["loss"]}
+
+        def handle_batch(self, batch):
+            images, targets, weights = batch["features"], batch["targets"], batch["weights"]
+
+            logits = self._model(images)
+            batch_size = targets.size(0)
+
+            loss = criterion(logits, targets)
+            loss = loss * weights
+            loss_mean = loss.mean()
+
+            self.batch = {"logits": logits, "targets": targets, "loss": loss_mean}
+            self.batch_metrics.update({"loss": loss_mean})
+            for key in ["loss"]:
+                self.meters[key].update(self.batch_metrics[key].item(), batch_size)
+
+        def on_loader_end(self, runner: dl.IRunner):
+            for key in ["loss"]:
+                self.loader_metrics[key] = self.meters[key].compute()[0]
+            super().on_loader_end(runner)
+
+        def on_epoch_end(self, runner):
+            super().on_epoch_end(runner)
+
+    runner = CustomRunner(
         input_key="features", output_key="logits", target_key="targets", loss_key="loss"
     )
 
@@ -143,13 +173,6 @@ def main(cfg: DictConfig):
         loaders=get_loaders(cfg, file_dataset),
         num_epochs=cfg.num_epochs,
         callbacks=[
-            # Required for metrics data transform
-            # dl.BatchTransformCallback(
-            #     input_key="targets",
-            #     output_key="targets_ohe",
-            #     scope="on_batch_end",
-            #     transform=partial(mask_batch_idx_2_ohe_encode, n_classes=num_classes),
-            # ),
             dl.BatchTransformCallback(
                 input_key="logits",
                 output_key="scores",

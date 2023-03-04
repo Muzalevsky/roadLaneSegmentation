@@ -10,11 +10,14 @@ seed: 42
 lr: 1.0e-4
 
 # All cores
-num_workers: 14
-batch_size: 4
+num_workers: 2
+batch_size: 1
 
-dataset_name: examples_preprocessed
-dataset_version: "2023_02_27"
+# dataset_name: examples_preprocessed
+# dataset_version: "2023_02_27"
+
+dataset_name: apolloscapes_preprocessed
+dataset_version: "2023_02_26"
 
 label_map:
   background: 0
@@ -44,6 +47,7 @@ scheduler:
 
 criterion:
   _target_: torch.nn.CrossEntropyLoss
+  reduction: mean
 
 model:
   _target_: segmentation_models_pytorch.Unet
