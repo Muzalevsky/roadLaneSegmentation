@@ -10,11 +10,11 @@ seed: 42
 lr: 1.0e-4
 
 # All cores
-num_workers: 14
-batch_size: 4
+num_workers: -1
+batch_size: 1
 
-dataset_name: examples_preprocessed
-dataset_version: "2023_02_27"
+dataset_name: apolloscape_cropped_v2
+dataset_version: "2023_03_04"
 
 label_map:
   background: 0

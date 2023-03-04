@@ -48,3 +48,22 @@ class ImageBlockReader:
                 )
 
         return blocks
+
+    def get_cells_geometry(self, w: int, h: int, cell_size_px: int) -> np.ndarray:
+        cols = math.ceil(w / cell_size_px)
+        rows = math.ceil(h / cell_size_px)
+
+        cells_geometry = []
+        for row in range(rows):
+            for col in range(cols):
+                cells_geometry.append(
+                    {
+                        "index": row * cols + col,
+                        "x": col * cell_size_px,
+                        "y": row * cell_size_px,
+                        "w": cell_size_px,
+                        "h": cell_size_px,
+                    }
+                )
+
+        return cells_geometry
