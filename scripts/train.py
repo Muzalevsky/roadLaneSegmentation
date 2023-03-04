@@ -3,6 +3,7 @@ import os
 from functools import partial
 
 import hydra
+import torch
 from catalyst import dl
 from omegaconf import DictConfig, OmegaConf
 from torch import nn
@@ -82,6 +83,7 @@ def main(cfg: DictConfig):
     OmegaConf.register_new_resolver("len", lambda data: len(data))
 
     dataset_dpath = os.path.join(DATA_DPATH, cfg.dataset_name, cfg.dataset_version)
+    logger.info(f"Dataset dpath: {dataset_dpath}")
     file_dataset = FileDataset(dataset_dpath)
 
     clearml_task = misc.init_clearml(cfg, file_dataset.hash)
@@ -108,7 +110,10 @@ def main(cfg: DictConfig):
     model = hydra.utils.instantiate(cfg.model)
     optimizer = hydra.utils.instantiate(cfg.optimizer, params=model.parameters())
     scheduler = hydra.utils.instantiate(cfg.scheduler, optimizer=optimizer)
-    criterion = hydra.utils.instantiate(cfg.criterion)
+
+    weights = list(cfg.class_weights.values())
+    weights = torch.tensor(weights)
+    criterion = hydra.utils.instantiate(cfg.criterion, weight=weights)
 
     runner = dl.SupervisedRunner(
         input_key="features", output_key="logits", target_key="targets", loss_key="loss"
@@ -143,13 +148,6 @@ def main(cfg: DictConfig):
         loaders=get_loaders(cfg, file_dataset),
         num_epochs=cfg.num_epochs,
         callbacks=[
-            # Required for metrics data transform
-            # dl.BatchTransformCallback(
-            #     input_key="targets",
-            #     output_key="targets_ohe",
-            #     scope="on_batch_end",
-            #     transform=partial(mask_batch_idx_2_ohe_encode, n_classes=num_classes),
-            # ),
             dl.BatchTransformCallback(
                 input_key="logits",
                 output_key="scores",

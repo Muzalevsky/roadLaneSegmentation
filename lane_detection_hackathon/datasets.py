@@ -114,7 +114,6 @@ class SegmentationDataset(Dataset):
         # TODO: normalize img, values: [0, 1]
 
         img_tensor = image_2_tensor(img)
-        # TODO: check for multiple masks
         mask_tensor = mask_2_tensor(ohe_masks)
 
-        return img_tensor, mask_tensor
+        return {"features": img_tensor, "targets": mask_tensor}
