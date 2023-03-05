@@ -79,12 +79,16 @@ def get_cells_geometry(w: int, h: int, cell_size_px: int) -> np.ndarray:
     return cells_geometry
 
 
-def glue_blocks(w: int, h: int, img_tiles: np.ndarray) -> np.ndarray:
+def glue_blocks(w: int, h: int, img_tiles: np.ndarray, gray_scale: bool = False) -> np.ndarray:
     block_w = img_tiles[0].shape[1]
     block_h = img_tiles[0].shape[0]
 
     cols = math.ceil(w / block_w)
     rows = math.ceil(h / block_h)
+
+    final_shape = [rows * block_h, cols * block_w]
+    if not gray_scale:
+        final_shape.append(3)
 
     final = np.zeros((rows * block_h, cols * block_w, 3), np.uint8)
     for row in range(rows):
