@@ -7,7 +7,8 @@ import torch
 from segmentation_models_pytorch import Unet
 from tqdm import tqdm
 
-from .patch_extractor import ImageBlockReader
+from .masks import MaskProcessor
+from .utils.image import glue_blocks, read_blocks
 from .utils.torch_transform import image_2_tensor
 from .utils.types import Dict, ImageMask, ImageRGB
 
@@ -47,6 +48,7 @@ class SegmentationResult:
     def __init__(self, pred_scores: np.ndarray):
         # NOTE: float16 for memory optimization
         self._scores_data = pred_scores.astype(np.float16)
+        self._mask_processor = MaskProcessor()
 
     def get_label_mask(self) -> ImageMask:
         label_mask = np.argmax(self._scores_data, axis=-1).astype(np.uint8)
@@ -63,15 +65,23 @@ class SegmentationResult:
 
         return heatmap
 
+    def get_rgb_mask(self, label_map: dict) -> ImageRGB:
+        label_mask = self.get_label_mask()
+        rgb_mask = self._mask_processor.label_to_rgb(label_mask, label_map)
+        return rgb_mask
+
 
 class InferenceResult:
     def __init__(self, scores: list[SegmentationResult]):
         self._scores = scores
         self._full_mask = None
 
-    def get_label_cells(self) -> list[ImageMask]:
-        label_cells = [res.get_label_mask() for res in self._scores]
-        return label_cells
+    def get_rgb_mask(self, label_map: dict, img_shape: tuple[int, int]):
+        rgb_cell_masks = [res.get_rgb_mask(label_map) for res in self._scores]
+
+        img_h, img_w = img_shape
+        rgb_mask = glue_blocks(img_w, img_h, rgb_cell_masks)
+        return rgb_mask
 
 
 class SegmentationInference(BaseInference):
@@ -86,8 +96,6 @@ class SegmentationInference(BaseInference):
         device: Optional[str] = "cpu",
     ):
         super().__init__(model, batch_size, device)
-
-        self._block_maker = ImageBlockReader(pad_fill_value=(0, 0, 0))
 
         self._config = cfg
         self._verbose = verbose
@@ -136,8 +144,8 @@ class SegmentationInference(BaseInference):
             yield batch_t
             tensors_batch.clear()
 
-    def predict(self, full_img: ImageRGB) -> list[SegmentationResult]:
-        img_patches = self._block_maker.read_blocks(full_img, self.cell_size)
+    def predict(self, full_img: ImageRGB) -> ImageRGB:
+        img_patches = read_blocks(full_img, self.cell_size)
 
         pred_seg_results = []
 
@@ -155,9 +163,4 @@ class SegmentationInference(BaseInference):
                     pred_seg_results.append(pred_result)
 
         pred_infer_result = InferenceResult(pred_seg_results)
-        label_masks = pred_infer_result.get_label_cells()
-        h, w = full_img.shape[:2]
-        full_pred_mask = self._block_maker.glue_blocks(w, h, label_masks)
-
-        # TODO: return class with heatmap access
-        return full_pred_mask
+        return pred_infer_result
