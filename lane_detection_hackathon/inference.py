@@ -83,6 +83,12 @@ class InferenceResult:
         rgb_mask = glue_blocks(img_w, img_h, rgb_cell_masks)
         return rgb_mask
 
+    def get_heatmap(self, label_id: int, img_shape: tuple[int, int]):
+        heatmaps = [res.get_heatmap_mask(label_id) for res in self._scores]
+        img_h, img_w = img_shape
+        full_heatmap = glue_blocks(img_w, img_h, heatmaps)
+        return full_heatmap
+
 
 class SegmentationInference(BaseInference):
     """Segmentation Inference class implementation."""
