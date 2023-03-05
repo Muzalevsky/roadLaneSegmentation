@@ -76,14 +76,14 @@ class InferenceResult:
         self._scores = scores
         self._full_mask = None
 
-    def get_rgb_mask(self, label_map: dict, img_shape: tuple[int, int]):
+    def get_rgb_mask(self, label_map: dict, img_shape: tuple[int, int]) -> ImageRGB:
         rgb_cell_masks = [res.get_rgb_mask(label_map) for res in self._scores]
 
         img_h, img_w = img_shape
         rgb_mask = glue_blocks(img_w, img_h, rgb_cell_masks)
         return rgb_mask
 
-    def get_heatmap(self, label_id: int, img_shape: tuple[int, int]):
+    def get_heatmap(self, label_id: int, img_shape: tuple[int, int]) -> ImageMask:
         heatmaps = [res.get_heatmap_mask(label_id) for res in self._scores]
         img_h, img_w = img_shape
         full_heatmap = glue_blocks(img_w, img_h, heatmaps)
