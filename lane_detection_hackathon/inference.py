@@ -87,6 +87,9 @@ class InferenceResult:
         heatmaps = [res.get_heatmap_mask(label_id) for res in self._scores]
         img_h, img_w = img_shape
         full_heatmap = glue_blocks(img_w, img_h, heatmaps)
+
+        full_heatmap = np.clip(full_heatmap, 0, 1)
+        full_heatmap = (full_heatmap * 255).astype(np.uint8)
         return full_heatmap
 
 
