@@ -13,8 +13,7 @@ from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
 from .baseparser import BaseParser
-from .patch_extractor import ImageBlockReader
-from .utils import fs
+from .utils import fs, image
 
 SampleInfo = namedtuple("SampleInfo", field_names=["img_fpath", "mask_fpath", "folder_idx"])
 
@@ -74,9 +73,8 @@ class ApolloScape(BaseParser):
             logger.warning(f"Different image sizes <{img.shape[:2]} != {mask.shape[:2]}>.")
             return
 
-        block_reader = ImageBlockReader([0, 0, 0])
-        img_tiles = block_reader.read_blocks(img, cell_size_px)
-        mask_tiles = block_reader.read_blocks(mask, cell_size_px)
+        img_tiles = image.read_blocks(img, cell_size_px)
+        mask_tiles = image.read_blocks(mask, cell_size_px)
 
         img_cell_dirpath = os.path.join(cell_images_dir, img_name)
         mask_cell_dirpath = os.path.join(cell_mask_dir, mask_name)
@@ -85,7 +83,7 @@ class ApolloScape(BaseParser):
 
         cells = []
 
-        cells_geometry = block_reader.get_cells_geometry(img.shape[1], img.shape[0], cell_size_px)
+        cells_geometry = image.get_cells_geometry(img.shape[1], img.shape[0], cell_size_px)
         fs.save_json(os.path.join(img_cell_dirpath, "geometry.json"), cells_geometry)
         fs.save_json(os.path.join(mask_cell_dirpath, "geometry.json"), cells_geometry)
 
