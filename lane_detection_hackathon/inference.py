@@ -64,6 +64,16 @@ class SegmentationResult:
         return heatmap
 
 
+class InferenceResult:
+    def __init__(self, scores: list[SegmentationResult]):
+        self._scores = scores
+        self._full_mask = None
+
+    def get_label_cells(self) -> list[ImageMask]:
+        label_cells = [res.get_label_mask() for res in self._scores]
+        return label_cells
+
+
 class SegmentationInference(BaseInference):
     """Segmentation Inference class implementation."""
 
@@ -129,7 +139,7 @@ class SegmentationInference(BaseInference):
     def predict(self, full_img: ImageRGB) -> list[SegmentationResult]:
         img_patches = self._block_maker.read_blocks(full_img, self.cell_size)
 
-        pred_results = []
+        pred_seg_results = []
 
         stream = self.batch_generator(img_patches)
         for img_batch_t in stream:
@@ -142,7 +152,12 @@ class SegmentationInference(BaseInference):
 
                 for batch_i in range(scores_pred_t.shape[0]):
                     pred_result = SegmentationResult(scores_pred_t[batch_i].cpu().numpy())
-                    pred_results.append(pred_result)
+                    pred_seg_results.append(pred_result)
 
-        # TODO: merge cells into one image (?)
-        return pred_results
+        pred_infer_result = InferenceResult(pred_seg_results)
+        label_masks = pred_infer_result.get_label_cells()
+        h, w = full_img.shape[:2]
+        full_pred_mask = self._block_maker.glue_blocks(w, h, label_masks)
+
+        # TODO: return class with heatmap access
+        return full_pred_mask
