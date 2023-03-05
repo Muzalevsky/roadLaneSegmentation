@@ -67,3 +67,22 @@ class ImageBlockReader:
                 )
 
         return cells_geometry
+
+    def glue_blocks(self, w: int, h: int, img_tiles: np.ndarray) -> np.ndarray:
+        block_w = img_tiles[0].shape[1]
+        block_h = img_tiles[0].shape[0]
+
+        cols = math.ceil(w / block_w)
+        rows = math.ceil(h / block_h)
+
+        final = np.zeros((rows * block_h, cols * block_w, 3), np.uint8)
+        for row in range(rows):
+            for col in range(cols):
+                index = row * cols + col
+                x = col * block_w
+                y = row * block_h
+                x2, y2 = x + block_w, y + block_h
+                final[y:y2, x:x2] = img_tiles[index]
+
+        cropped = final[0:h, 0:w]
+        return cropped
