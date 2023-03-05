@@ -1,5 +1,3 @@
-import types
-
 import json
 
 import cv2
@@ -9,6 +7,7 @@ import yaml
 from tqdm import tqdm
 
 from .image import is_gray
+from .types import Image
 
 
 def read_image(fpath: str, gray_scale: bool = False) -> np.ndarray:
@@ -99,12 +98,12 @@ class VideoWriter(VideoProcessor):
         self._stream = imageio.get_writer(fpath, fps=int(fps))
         self._verbose = verbose
 
-    def write_frame(self, frame: types.Image):
+    def write_frame(self, frame: Image):
         """Write single frame."""
 
         self._stream.append_data(frame)
 
-    def write(self, frames: list[types.Image]):
+    def write(self, frames: list[Image]):
         """Write list of frames."""
 
         stream = frames
