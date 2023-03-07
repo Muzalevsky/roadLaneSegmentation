@@ -43,6 +43,8 @@ class MetricCalculator:
 
         n_dims = len(pred_mask.shape)
         dims = list(range(n_dims))
+        # NOTE: remove class_dim
+        dims.pop(-1)
 
         sum_per_class = partial(np.sum, axis=tuple(dims))
         tp = sum_per_class(pred_mask * true_mask)
@@ -54,7 +56,11 @@ class MetricCalculator:
 
     def update(self, true_mask: ImageMask, pred_mask: ImageMask):
         tp, fp, fn = self._compare_masks(true_mask, pred_mask)
+
         for idx, (tp_class, fp_class, fn_class) in enumerate(zip(tp, fp, fn)):
+            if idx not in self._data.keys():
+                self._data[idx] = {"tp": 0, "fp": 0, "fn": 0}
+
             self._data[idx]["tp"] += tp_class
             self._data[idx]["fp"] += fp_class
             self._data[idx]["fn"] += fn_class

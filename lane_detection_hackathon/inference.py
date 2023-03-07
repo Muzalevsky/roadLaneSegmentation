@@ -72,24 +72,31 @@ class SegmentationResult:
 
 
 class InferenceResult:
-    def __init__(self, scores: list[SegmentationResult]):
+    def __init__(self, scores: list[SegmentationResult], label_map: dict):
         self._scores = scores
-        self._full_mask = None
+        self._label_map = label_map
 
-    def get_rgb_mask(self, label_map: dict, img_shape: tuple[int, int]) -> ImageRGB:
-        rgb_cell_masks = [res.get_rgb_mask(label_map) for res in self._scores]
+    def get_label_patches(self):
+        return [res.get_label_mask() for res in self._scores]
 
-        img_h, img_w = img_shape
+    def get_label_mask(self, img_shape: tuple[int, int]) -> ImageMask:
+        label_patches = [res.get_label_mask() for res in self._scores]
+
+        img_h, img_w = img_shape[:2]
+        label_mask = glue_blocks(img_w, img_h, label_patches)
+        return label_mask
+
+    def get_rgb_mask(self, img_shape: tuple[int, int]) -> ImageRGB:
+        rgb_cell_masks = [res.get_rgb_mask(self._label_map) for res in self._scores]
+
+        img_h, img_w = img_shape[:2]
         rgb_mask = glue_blocks(img_w, img_h, rgb_cell_masks)
         return rgb_mask
 
     def get_heatmap(self, label_id: int, img_shape: tuple[int, int]) -> ImageMask:
-        heatmaps = [res.get_heatmap_mask(label_id) for res in self._scores]
-
-        img_h, img_w = img_shape
+        heatmaps = [np.clip(res.get_heatmap_mask(label_id), 0, 1) for res in self._scores]
+        img_h, img_w = img_shape[:2]
         full_heatmap = glue_blocks(img_w, img_h, heatmaps, gray_scale=True)
-
-        full_heatmap = np.clip(full_heatmap, 0, 1)
         full_heatmap = (full_heatmap * 255).astype(np.uint8)
         return full_heatmap
 
@@ -172,5 +179,5 @@ class SegmentationInference(BaseInference):
                     pred_result = SegmentationResult(scores_pred_t[batch_i].cpu().numpy())
                     pred_seg_results.append(pred_result)
 
-        pred_infer_result = InferenceResult(pred_seg_results)
+        pred_infer_result = InferenceResult(pred_seg_results, label_map=self.label_map)
         return pred_infer_result

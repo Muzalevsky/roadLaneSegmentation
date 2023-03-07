@@ -90,7 +90,7 @@ def glue_blocks(w: int, h: int, img_tiles: np.ndarray, gray_scale: bool = False)
     if not gray_scale:
         final_shape.append(3)
 
-    final = np.zeros((rows * block_h, cols * block_w, 3), np.uint8)
+    final = np.zeros(final_shape, np.uint8)
     for row in range(rows):
         for col in range(cols):
             index = row * cols + col
