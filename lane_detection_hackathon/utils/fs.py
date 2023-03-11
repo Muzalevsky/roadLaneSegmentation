@@ -62,10 +62,12 @@ class VideoReader(VideoProcessor):
     fps_key = "fps"
     size_key = "size"
     nframe_key = "nframes"
+    duration_key = "duration"
 
-    def __init__(self, fpath: str):
+    def __init__(self, fpath: str, verbose: bool = False):
         self._stream = imageio.get_reader(fpath, "ffmpeg")
         self._meta_data = self._stream.get_meta_data()
+        self._verbose = True
 
     @property
     def fps(self) -> float:
@@ -77,7 +79,12 @@ class VideoReader(VideoProcessor):
 
     @property
     def frame_number(self) -> int:
-        return self._meta_data[self.nframe_key]
+        n_frames = self._meta_data[self.nframe_key]
+
+        if np.isinf(n_frames):
+            n_frames = self.fps * self._meta_data[self.duration_key]
+
+        return int(n_frames)
 
     @property
     def duration_s(self) -> float:
@@ -86,7 +93,11 @@ class VideoReader(VideoProcessor):
         return frame_n / fps_count
 
     def get_frames(self):
-        for frame in self._stream.iter_data():
+        stream = self._stream.iter_data()
+        if self._verbose:
+            stream = tqdm(stream, total=self.frame_number)
+
+        for frame in stream:
             frame = np.asarray(frame)
             yield frame
 
