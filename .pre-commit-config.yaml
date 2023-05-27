@@ -20,7 +20,7 @@ repos:
       - id: debug-statements
       - id: check-added-large-files
         args: ["--maxkb=500"]
-        exclude: checkpoints
+        exclude: '(checkpoints|demo)/.*'
       - id: check-docstring-first
       - id: detect-private-key
       - id: check-case-conflict
