@@ -49,3 +49,9 @@ Awesome `lane-detection-hackathon` project!
 ## Other interesting info
 
 Here you can write anything about your project!
+
+And here is the result of the latest checkpoint:
+
+![DemoGIF](demo/test_camera_6(2).gif)
+
+
