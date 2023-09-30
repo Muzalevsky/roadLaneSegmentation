@@ -28,16 +28,17 @@ This project focuses on the segmentation of city road lane markings using deep m
 
 ## Metrics
 
-| class_name | IoU - The latest | IoU - T204 | The latest DICE | T204 DICE |
-| :--------: | :--------------: | :--------: | :-------------: | :-------: |
-| background |      0.998       |   0.998    |      0.999      |   0.998   |
-|    SYD     |      0.986       |   0.823    |      0.987      |   0.899   |
-|    BWG     |      0.693       |   0.568    |      0.775      |   0.682   |
-|    SWD     |      0.794       |   0.617    |      0.881      |   0.727   |
-|    SWS     |      0.114       |   0.432    |      0.162      |   0.54    |
-|    CWYZ    |      0.386       |    0.56    |      0.496      |   0.687   |
-|   micro    |      0.995       |   0.995    |      0.998      |   0.998   |
-|   macro    |      0.662       |   0.667    |      0.717      |   0.756   |
+| Class label |         Class name         | IoU - The latest | IoU - T204 | The latest DICE | T204 DICE |
+| :---------: | :------------------------: | :--------------: | :--------: | :-------------: | :-------: |
+| background  |         background         |      0.998       |   0.998    |      0.999      |   0.998   |
+|     SYD     | solid yellow dividing line |      0.986       |   0.823    |      0.987      |   0.899   |
+|     BWG     | broken white guiding line  |      0.693       |   0.568    |      0.775      |   0.682   |
+|     SWD     | solid white dividing line  |      0.794       |   0.617    |      0.881      |   0.727   |
+|     SWS     |   solid white stop line    |      0.114       |   0.432    |      0.162      |   0.54    |
+|    CWYZ     |         crosswalk          |      0.386       |    0.56    |      0.496      |   0.687   |
+|      -      |             -              |        -         |     -      |        -        |     -     |
+|    micro    |                            |      0.995       |   0.995    |      0.998      |   0.998   |
+|    macro    |                            |      0.662       |   0.667    |      0.717      |   0.756   |
 
 
 ## Articles
