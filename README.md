@@ -11,7 +11,6 @@
 ![pytorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
 ![ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
 
-
 This project focuses on the segmentation of city road lane markings using deep machine learning techniques.
 
 ![DemoGIF](demo/test_camera_6(2).gif)
@@ -29,10 +28,6 @@ This project focuses on the segmentation of city road lane markings using deep m
 
 ## Metrics
 
-</div>
-
-<div align="center">
-
 | class_name | IoU - The latest | IoU - T204 | The latest DICE | T204 DICE |
 | :--------: | :--------------: | :--------: | :-------------: | :-------: |
 | background |      0.998       |   0.998    |      0.999      |   0.998   |
@@ -44,9 +39,17 @@ This project focuses on the segmentation of city road lane markings using deep m
 |   micro    |      0.995       |   0.995    |      0.998      |   0.998   |
 |   macro    |      0.662       |   0.667    |      0.717      |   0.756   |
 
+
+## Articles
+
 </div>
 
+
+* [Lane Merking Semantic Segmentation Using Convolutional Neural Networks](https://ieeexplore.ieee.org/abstract/document/10159034), SCM, 2023
+
+
 <div align="center">
+
 
 ## Repository contents
 
@@ -56,9 +59,7 @@ This project focuses on the segmentation of city road lane markings using deep m
 - [reports](reports) - reports generated (as generated from notebooks)
   > Check if you need to ignore large reports or keep them in Git LFS
 - [configs](configs) - configuration files directory
-
 - [notebooks](notebooks) - directory for `jupyter` notebooks
-
 - [scripts](scripts) - repository service scripts
   > These ones are not included into the pakckage if you build one - these scripts are only for usage with repository
 - [lane_detection_hackathon](lane_detection_hackathon) - source files of the project
