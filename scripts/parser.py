@@ -5,7 +5,7 @@ from datetime import datetime
 
 import click
 
-from lane_detection_hackathon import apolloscape
+from road_lane_segmentation import apolloscape
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__file__)

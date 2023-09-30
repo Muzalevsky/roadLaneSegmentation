@@ -4,9 +4,9 @@ requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "lane-detection-hackathon"
+name = "road-lane-segmentation"
 version = "0.1.0"
-description = "Awesome `lane-detection-hackathon` project!"
+description = "Awesome `road-lane-segmentation` project!"
 readme = "README.md"
 authors = ["Awesome user <awesome-user@example.com>"]
 repository = ""
@@ -24,8 +24,6 @@ classifiers = [  #! Update me
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.9",
 ]
-
-
 
 [tool.poetry.dependencies]
 python = "~3.9.0"
@@ -51,12 +49,9 @@ imageio-ffmpeg = "^0.4.8"
 [tool.poetry.group.dev.dependencies]
 black = {version = "^21.7", allow-prereleases = true}
 isort = {extras = ["colors"], version = "^5.10.1"}
-
 pre-commit = "^2.14.0"
-
 nbdime = "^3.1.0"
 envyaml = "^1.9.210927"
-
 ipykernel = "^6.4.2"
 jupyter = "^1.0.0"
 jinja2 = "3.0.3"
@@ -66,7 +61,6 @@ clearml = "^1.9.1"
 jupyter-contrib-nbextensions = "^0.7.0"
 jupyter-client = "^8.0.3"
 jupyterlab = "^3.6.1"
-
 
 [tool.black]
 # https://github.com/psf/black
@@ -102,8 +96,6 @@ profile = "black"
 multi_line_output = 3
 indent = 4
 color_output = true
-
-
 
 [tool.pytest.ini_options]
 # https://docs.pytest.org/en/6.2.x/customize.html#pyproject-toml

@@ -9,9 +9,9 @@ from omegaconf import DictConfig, OmegaConf
 from torch import nn
 from torch.utils.data import DataLoader
 
-from lane_detection_hackathon import callbacks as cb
-from lane_detection_hackathon.datasets import DatasetMode, FileDataset, SegmentationDataset
-from lane_detection_hackathon.utils import misc, project
+from road_lane_segmentation import callbacks as cb
+from road_lane_segmentation.datasets import DatasetMode, FileDataset, SegmentationDataset
+from road_lane_segmentation.utils import misc, project
 
 CURRENT_DPATH = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DPATH, os.pardir))
