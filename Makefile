@@ -2,8 +2,6 @@
 SHELL := /usr/bin/env bash
 PYTHON ?= python3
 
-
-
 #* Installation
 .PHONY: project-init
 project-init: poetry-install tools-install
@@ -34,10 +32,6 @@ tools-install:
 nbextention-toc-install:
 	poetry run jupyter contrib nbextension install --user
 	poetry run jupyter nbextension enable toc2/main
-
-
-
-
 
 #* Cleaning
 .PHONY: pycache-remove

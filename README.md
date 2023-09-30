@@ -1,21 +1,56 @@
-# lane-detection-hackathon
+# Road Lane Segmentation
 
 <div align="center">
 
 [![PythonSupported](https://img.shields.io/badge/python-3.9-brightgreen.svg)](https://python3statement.org/#sections50-why)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://pre-commit.com/)
-[![Bandit](https://img.shields.io/badge/security-bandit-informational.svg)](https://github.com/PyCQA/bandit)
+[![poetry](https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json)](https://python-poetry.org/)
 
-Awesome `lane-detection-hackathon` project!
+
+![pytorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
+![ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
+
+
+This project focuses on the segmentation of city road lane markings using deep machine learning techniques.
+
+![DemoGIF](demo/test_camera_6(2).gif)
+
+## Trained Models
 
 </div>
 
-- [Repository contents](#repository-contents)
-- [System requirements](#system-requirements)
-- [Other interesting info](#other-interesting-info)
+* **The latest**: `best-valid-iou_1c07833020cf45939f24b5bec2bada5a.pth`
+* **Trained in T204**: `best-valid-iou_40446a2b3b7543c292301a3b2da1ed67.pth`
+
+> T204 trained on datasets with errors
+
+<div align="center">
+
+## Metrics
+
+</div>
+
+<div align="center">
+
+| class_name | IoU - The latest | IoU - T204 | The latest DICE | T204 DICE |
+| :--------: | :--------------: | :--------: | :-------------: | :-------: |
+| background |      0.998       |   0.998    |      0.999      |   0.998   |
+|    SYD     |      0.986       |   0.823    |      0.987      |   0.899   |
+|    BWG     |      0.693       |   0.568    |      0.775      |   0.682   |
+|    SWD     |      0.794       |   0.617    |      0.881      |   0.727   |
+|    SWS     |      0.114       |   0.432    |      0.162      |   0.54    |
+|    CWYZ    |      0.386       |    0.56    |      0.496      |   0.687   |
+|   micro    |      0.995       |   0.995    |      0.998      |   0.998   |
+|   macro    |      0.662       |   0.667    |      0.717      |   0.756   |
+
+</div>
+
+<div align="center">
 
 ## Repository contents
+
+</div>
 
 - [docs](docs) - documentation of the project
 - [reports](reports) - reports generated (as generated from notebooks)
@@ -37,21 +72,3 @@ Awesome `lane-detection-hackathon` project!
 - [cookiecutter-config-file.yml](cookiecutter-config-file.yml) - cookiecutter project config log
 - [poetry.toml](poetry.toml) - poetry local config
 - [pyproject.toml](pyproject.toml) - Python project configuration
-
-## System requirements
-
-- Python version: 3.9
-- Operating system: Ubuntu 20.04
-- Poetry version >= 1.2.0
-
-> We tested on this setup - you can try other versions or operation systems by yourself!
-
-## Other interesting info
-
-Here you can write anything about your project!
-
-And here is the result of the latest checkpoint:
-
-![DemoGIF](demo/test_camera_6(2).gif)
-
-
