@@ -45,8 +45,9 @@ This project focuses on the segmentation of city road lane markings using deep m
 
 </div>
 
+A. R. Muzalevskiy, E. V. Serykh, M. M. Kopichev, E. V. Druian and M. A. Chernyshev, "Lane Marking Semantic Segmentation Using Convolutional Neural Networks," 2023 XXVI International Conference on Soft Computing and Measurements (SCM), Saint Petersburg, Russian Federation, 2023, pp. 123-126, doi: 10.1109/SCM58628.2023.10159034.
 
-* [Lane Merking Semantic Segmentation Using Convolutional Neural Networks](https://ieeexplore.ieee.org/abstract/document/10159034), SCM, 2023
+* [Lane Marking Semantic Segmentation Using Convolutional Neural Networks](https://ieeexplore.ieee.org/abstract/document/10159034), SCM, 2023
 
 
 <div align="center">
