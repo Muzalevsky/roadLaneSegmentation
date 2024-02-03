@@ -1,5 +1,5 @@
 # type: ignore[attr-defined]
-"""Awesome `lane-detection-hackathon` project!"""
+"""Awesome `road-lane-segmentation` project!"""
 
 from importlib import metadata as importlib_metadata
 
